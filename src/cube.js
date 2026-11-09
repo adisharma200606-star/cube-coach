@@ -22,9 +22,9 @@ export const SCAN_STEPS = [
 ];
 
 // Which facelets make up each piece (0-based indexes into the 54-letter string).
-const CORNERS = [[8, 9, 20], [6, 18, 38], [0, 36, 47], [2, 45, 11], [29, 26, 15], [27, 44, 24], [33, 53, 42], [35, 17, 51]];
+export const CORNERS = [[8, 9, 20], [6, 18, 38], [0, 36, 47], [2, 45, 11], [29, 26, 15], [27, 44, 24], [33, 53, 42], [35, 17, 51]];
 const CORNER_COLS = ['URF', 'UFL', 'ULB', 'UBR', 'DFR', 'DLF', 'DBL', 'DRB'];
-const EDGES = [[5, 10], [7, 19], [3, 37], [1, 46], [32, 16], [28, 25], [30, 43], [34, 52], [23, 12], [21, 41], [50, 39], [48, 14]];
+export const EDGES = [[5, 10], [7, 19], [3, 37], [1, 46], [32, 16], [28, 25], [30, 43], [34, 52], [23, 12], [21, 41], [50, 39], [48, 14]];
 const EDGE_COLS = ['UR', 'UF', 'UL', 'UB', 'DR', 'DF', 'DL', 'DB', 'FR', 'FL', 'BL', 'BR'];
 
 export function groupsToFacelets(groups) {
@@ -213,4 +213,10 @@ export function readCube(labs) {
     });
   }
   return facelets;
+}
+
+// A random-state scramble (what official competitions use), as moves to do from solved.
+export function randomScramble() {
+  initSolver();
+  return invert(Cube.random().solve().trim());
 }

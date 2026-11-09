@@ -4,65 +4,140 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cube Coach</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%2318202e%22/%3E%3Crect x=%224%22 y=%224%22 width=%227%22 height=%227%22 fill=%22%23fff%22/%3E%3Crect x=%2212.5%22 y=%224%22 width=%227%22 height=%227%22 fill=%22%23c8202f%22/%3E%3Crect x=%2221%22 y=%224%22 width=%227%22 height=%227%22 fill=%22%23ffd200%22/%3E%3Crect x=%224%22 y=%2212.5%22 width=%227%22 height=%227%22 fill=%22%230a9a4a%22/%3E%3Crect x=%2212.5%22 y=%2212.5%22 width=%227%22 height=%227%22 fill=%22%23fff%22/%3E%3Crect x=%2221%22 y=%2212.5%22 width=%227%22 height=%227%22 fill=%22%23ff6c14%22/%3E%3Crect x=%224%22 y=%2221%22 width=%227%22 height=%227%22 fill=%22%23ffd200%22/%3E%3Crect x=%2212.5%22 y=%2221%22 width=%227%22 height=%227%22 fill=%22%231f4fd1%22/%3E%3Crect x=%2221%22 y=%2221%22 width=%227%22 height=%227%22 fill=%22%230a9a4a%22/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <header>
-      <h1>Cube Coach</h1>
-      <p class="tag">Your webcam reads your cube. Then it teaches you.</p>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        Cube Coach
+      </div>
+      <nav class="tabs" role="tablist">
+        <button role="tab" data-tab="learn" class="active">Learn</button>
+        <button role="tab" data-tab="timer">Timer</button>
+      </nav>
     </header>
 
+    <!-- The camera lives here and gets moved into whichever screen needs it -->
+    <div id="cam" class="cam mirror">
+      <video id="video" playsinline muted></video>
+      <canvas id="overlay"></canvas>
+    </div>
+
     <main>
-      <!-- STEP 1: scanning -->
-      <section id="scan" class="step">
-        <div class="stage-wrap">
-          <div id="stage" class="mirror">
-            <video id="video" playsinline muted></video>
-            <canvas id="overlay"></canvas>
+      <!-- ===== LEARN: 1. scan ===== -->
+      <section id="scan" class="screen">
+        <div class="split">
+          <div class="cam-slot" data-cam></div>
+          <div class="side">
+            <h1>Show me your cube</h1>
+            <p class="lede">Scramble it, then hold each side up to the camera so it fills the box. I'll work out where every piece is.</p>
+            <ol id="scan-list" class="scan-list"></ol>
+            <div class="row">
+              <button id="capture" class="btn primary">Capture side <kbd>Space</kbd></button>
+              <button id="flip-cam" class="btn ghost">Switch camera</button>
+            </div>
+            <p id="cam-error" class="error hidden"></p>
           </div>
-          <div id="cam-error" class="hidden"></div>
         </div>
-        <div class="panel">
-          <div class="step-count" id="step-count">Face 1 of 6</div>
-          <div class="hold">
-            <span class="chip" id="chip-front"></span>
-            <div>
-              <div id="instruction" class="instruction"></div>
-              <div class="hint">Fill the box with the face. Even light, no glare.</div>
+      </section>
+
+      <!-- ===== LEARN: 2. confirm the reading ===== -->
+      <section id="review" class="screen hidden">
+        <h1>Is this your cube?</h1>
+        <p id="review-msg" class="lede"></p>
+        <div id="net" class="net"></div>
+        <p class="note">Tap a sticker to change its colour. Dashed ones are where I had to guess.</p>
+        <div class="row">
+          <button id="confirm" class="btn primary">Yes, that's my cube</button>
+          <button id="rescan" class="btn ghost">Scan again</button>
+        </div>
+      </section>
+
+      <!-- ===== LEARN: 3. pick a method ===== -->
+      <section id="method" class="screen hidden">
+        <h1>How do you want to solve it?</h1>
+        <p class="lede">Pick a method. I'll teach it on your scramble, one step at a time.</p>
+        <div id="methods" class="methods"></div>
+      </section>
+
+      <!-- ===== LEARN: 4. the lesson ===== -->
+      <section id="lesson" class="screen hidden">
+        <ol id="stages" class="stages"></ol>
+        <div class="lesson">
+          <div class="viewer">
+            <div id="player-slot"></div>
+            <div class="row center">
+              <button id="replay" class="btn ghost">Show me again</button>
+              <label class="speed">Speed <input id="speed" type="range" min="0.3" max="2" step="0.1" value="0.8" /></label>
             </div>
           </div>
-          <div class="buttons">
-            <button id="capture" class="primary">Capture <kbd>space</kbd></button>
-            <button id="flip-cam">Switch camera</button>
+          <div class="side">
+            <p id="step-count" class="step-count"></p>
+            <h2 id="step-title"></h2>
+            <p id="step-detail" class="detail"></p>
+            <div id="moves" class="moves" aria-label="Moves for this step"></div>
+            <p id="move-help" class="move-help">Tap a move to see what it means.</p>
+            <div class="row">
+              <button id="prev" class="btn ghost">Back</button>
+              <button id="next" class="btn primary">I did it, next</button>
+            </div>
+            <div class="check">
+              <button id="check" class="btn">Check my cube with the camera</button>
+              <div id="check-box" class="check-box hidden">
+                <p id="check-how" class="check-how"></p>
+                <div class="cam-slot small" data-cam></div>
+                <div class="compare">
+                  <div><span class="mini-label">Should look like</span><div id="expect-face" class="face"></div></div>
+                  <div><span class="mini-label">Camera sees</span><div id="seen-face" class="face"></div></div>
+                </div>
+                <p id="check-result" class="check-result"></p>
+              </div>
+            </div>
+            <details class="notation">
+              <summary>What do the letters mean?</summary>
+              <p><b>R U F L D B</b> turn the Right, Up (top), Front, Left, Down (bottom) or Back face clockwise, as if you were looking straight at that face.</p>
+              <p><b>R'</b> (with a dash) turns it anticlockwise. <b>R2</b> turns it twice.</p>
+              <p>Lowercase <b>r f</b> turn two layers at once. <b>M</b> is the middle slice, turned like L.</p>
+              <p><b>x y z</b> rotate the whole cube: <b>y</b> like turning the top, <b>x</b> like R, <b>z</b> like F.</p>
+            </details>
           </div>
-          <div id="thumbs" class="thumbs"></div>
-          <p class="small">Tap a captured face to redo it.</p>
         </div>
       </section>
 
-      <!-- STEP 2: check the reading -->
-      <section id="review" class="step hidden">
-        <h2>Is this your cube?</h2>
-        <p id="review-msg" class="msg"></p>
-        <div id="net" class="net"></div>
-        <p class="small">Tap any sticker to change its colour. Outlined stickers are the ones I was least sure about.</p>
-        <div class="buttons">
-          <button id="build" class="primary">Looks right → build 3D cube</button>
-          <button id="rescan">Scan again</button>
+      <!-- ===== LEARN: 5. done ===== -->
+      <section id="done" class="screen hidden">
+        <h1>Solved.</h1>
+        <p id="done-msg" class="lede"></p>
+        <div class="row">
+          <button id="again" class="btn primary">Scramble and learn again</button>
+          <button id="to-timer" class="btn ghost">Try it timed</button>
         </div>
       </section>
 
-      <!-- STEP 3: digital twin -->
-      <section id="twin" class="step hidden">
-        <h2>Your cube, digitally</h2>
-        <p class="small">Drag to rotate it. This should match the cube in your hand (white top, green front).</p>
-        <div id="player-slot"></div>
-        <div class="buttons">
-          <button id="play-solution" class="primary">Show a computer solution</button>
-          <button id="restart">Scan another cube</button>
+      <!-- ===== TIMER ===== -->
+      <section id="timer" class="screen hidden">
+        <p class="scramble-label">Scramble</p>
+        <p id="scramble" class="scramble">Generating…</p>
+        <div id="clock" class="clock">0.00</div>
+        <p id="timer-hint" class="timer-hint">Press Space (or tap the time) to start. Press again to stop.</p>
+        <div class="timer-cam">
+          <label class="toggle"><input id="autostop" type="checkbox" /> Stop automatically when the camera sees a solved side</label>
+          <div id="timer-cam-wrap" class="hidden">
+            <div class="cam-slot small" data-cam></div>
+            <p class="note">When you finish, hold any side up to the box for a moment.</p>
+          </div>
         </div>
-        <p id="solution" class="mono small"></p>
-        <p class="small">Computer solutions are short but not how humans solve. Teaching F2L step by step is coming next.</p>
+        <div class="stats">
+          <div><span class="mini-label">Best</span><b id="best">–</b></div>
+          <div><span class="mini-label">Average of 5</span><b id="ao5">–</b></div>
+          <div><span class="mini-label">Solves</span><b id="count">0</b></div>
+        </div>
+        <ol id="times" class="times" reversed></ol>
       </section>
     </main>
 

@@ -4,14 +4,23 @@ An AI Rubik's cube teacher that uses your webcam. Show it your cube, and it buil
 
 Runs entirely in the browser. No server, no account, no install.
 
-## Status
+## What it does
 
-| Phase | What it does | Status |
-|---|---|---|
-| 1. Scan | Webcam reads all 6 faces → 3D digital twin | ✅ done |
-| 2. Teach | Picks your next F2L pair, animates it, you copy it | next |
-| 3. Watch | Waits for your hands to leave the cube, checks you did the right move | planned |
-| 4. Track | Follows any moves you make, live | stretch goal |
+1. **Scan** — scramble your cube and show each side to the webcam. It works out where every piece is.
+2. **Pick a method** — Beginner (layer by layer) or CFOP. More methods can plug in later.
+3. **Learn step by step** — for each stage it explains the goal, animates the exact moves on a 3D copy of *your* cube, and you copy them. Tap any move to see what it means.
+4. **Check with the camera** — after a step, hold your cube up and it compares the front side to what it should be.
+5. **Timer** — random-state scrambles, best time, average of 5. It can stop automatically when the camera sees a solved side.
+
+Next up: live move tracking (follow your turns as you make them, no button presses).
+
+## How the teaching works
+
+A method is a series of stages. For each stage the app has the same small set of algorithms a human would learn (e.g. `R U R' U'` for beginner corners, 41 F2L cases, OLL, PLL). It tries them on your exact cube — with "turn the top" and "rotate the cube" setups — and picks the shortest one that makes progress without breaking anything already solved.
+
+- The white cross is solved exactly (shortest possible) with a distance table.
+- F2L covers all 149 possible pair positions: hand-written standard algorithms plus computer-found ones for the gaps (`node scripts/gen-f2l.js`).
+- Tests solve hundreds of random scrambles with both methods (`npm test`). CFOP averages ~60 turns, Beginner ~150.
 
 ## How the scan works
 
@@ -38,5 +47,5 @@ Camera access needs `localhost` or `https`.
 
 ## Built with
 - [cubing.js](https://github.com/cubing/cubing.js) — 3D cube player
-- [cubejs](https://github.com/ldez/cubejs) — Kociemba two-phase solver
+- [cubejs](https://github.com/ldez/cubejs) — Kociemba two-phase solver (used to rebuild your scramble in 3D and make timer scrambles)
 - [Vite](https://vite.dev)

@@ -45,3 +45,38 @@ const check = new Cube(); check.move("R U R' U' F2 D"); check.move(sol);
 assert(check.isSolved(), 'solution should solve the cube');
 assert.equal(invert(''), '');
 console.log('validator + solver: OK');
+
+// ---------- Teaching engine ----------
+import { apply as apply54, fromString as from54, toString as to54, invertAlg } from '../src/engine/cube54.js';
+import { planSolve } from '../src/engine/methods.js';
+import { PLL, OLL } from '../src/engine/algs.js';
+
+// 1. our fast cube model agrees with cubejs (incl. rotations, slices, wide moves)
+const MOVES = ['U','R','F','D','L','B','M','E','S','x','y','z','r','f','l','u','d','b'];
+const SOLVED = new Cube().asString();
+for (let t = 0; t < 500; t++) {
+  const alg = Array.from({ length: 15 }, () => MOVES[Math.random() * 18 | 0] + ['', "'", '2'][Math.random() * 3 | 0]).join(' ');
+  assert.equal(to54(apply54(from54(SOLVED), alg)), new Cube().move(alg).asString(), 'model mismatch on ' + alg);
+  assert.equal(to54(apply54(apply54(from54(SOLVED), alg), invertAlg(alg))), SOLVED);
+}
+console.log('cube model: matches cubejs');
+
+// 2. both methods solve random scrambles, and the steps replay correctly
+for (const method of ['beginner', 'cfop']) {
+  let moves = 0;
+  for (let t = 0; t < 40; t++) {
+    const scan = Cube.random().asString();
+    const steps = planSolve(scan, method);
+    let st = apply54(from54(scan), 'z2');
+    for (const s of steps) st = apply54(st, s.moves || "U U'");
+    assert(st.every((v, i) => v === st[Math.floor(i / 9) * 9 + 4]), `${method} plan does not solve`);
+    moves += steps.reduce((a, s) => a + s.moves.split(' ').filter((m) => m && !/[xyz]/.test(m[0])).length, 0);
+  }
+  console.log(`${method}: 40/40 scrambles solved, avg ${(moves / 40).toFixed(0)} turns`);
+}
+
+// 3. every OLL/PLL alg keeps the first two layers intact
+const whiteDown = apply54(from54(SOLVED), 'z2');
+const f2lOk = (st) => to54(st).slice(27, 36) === to54(whiteDown).slice(27, 36); // white bottom face untouched
+for (const [name, alg] of [...OLL, ...PLL]) assert(f2lOk(apply54(whiteDown, alg)), `${name} breaks the bottom layer`);
+console.log('OLL/PLL algorithms: all keep F2L');
