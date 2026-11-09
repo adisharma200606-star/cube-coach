@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cube Coach · Tracking lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lab.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        Tracking lab
+      </div>
+      <a class="btn ghost small-btn" href="/">Back to Cube Coach</a>
+    </header>
+    <main class="lab">
+      <div class="lab-grid">
+        <div>
+          <div class="lab-cam"><video id="video" playsinline muted></video><div id="rec-dot" class="rec-dot hidden">REC</div></div>
+          <div class="row">
+            <button id="flip" class="btn ghost">Switch camera</button>
+            <span id="cam-info" class="note"></span>
+          </div>
+        </div>
+
+        <div>
+          <!-- setup -->
+          <section id="setup">
+            <h1>Record a test session</h1>
+            <p class="lede">This records video of you turning the cube, plus exactly which move you made and when. It's the answer key we use to train and score the live tracker.</p>
+            <ol class="howto">
+              <li><b>Solve your cube</b> and hold it with <b>white on top, green facing the camera</b>.</li>
+              <li>Press Start. Hold it still for the 3-second countdown.</li>
+              <li>Do the move shown, then tap <kbd>Space</kbd>. Repeat.</li>
+              <li>Messed up a move? Press <kbd>Esc</kbd>. Everything before it is still useful.</li>
+            </ol>
+            <div class="settings">
+              <label>Moves <input id="n-moves" type="number" min="5" max="200" value="30" /></label>
+              <label class="toggle"><input id="rotations" type="checkbox" checked /> Include whole-cube rotations (regrips)</label>
+              <label>Style
+                <select id="style">
+                  <option value="facing">Cube facing the camera</option>
+                  <option value="natural" selected>Natural grip, like a real solve</option>
+                  <option value="moving">Move it around, change angles</option>
+                </select>
+              </label>
+            </div>
+            <div class="row"><button id="start" class="btn primary">Start recording</button></div>
+            <p class="note">Tip: try a few sessions in different light (day, night, lamp). Variety makes the tracker robust.</p>
+          </section>
+
+          <!-- recording -->
+          <section id="recording" class="hidden">
+            <p id="progress" class="step-count"></p>
+            <div id="countdown" class="countdown hidden"></div>
+            <div id="now" class="now-move"></div>
+            <p id="now-help" class="move-help"></p>
+            <div id="upnext" class="upnext"></div>
+            <div class="row">
+              <button id="did" class="btn primary">Done <kbd>Space</kbd></button>
+              <button id="stop" class="btn ghost">Stop <kbd>Esc</kbd></button>
+            </div>
+            <p class="note">Your cube should now look like this:</p>
+            <div id="twin"></div>
+          </section>
+
+          <!-- finished -->
+          <section id="finished" class="hidden">
+            <h1>Session saved</h1>
+            <p id="summary" class="lede"></p>
+            <p>One <code>.zip</code> file downloaded (the video plus its answer key). Send it to me here. If it's too big to attach, put it in Google Drive and tell me the file name.</p>
+            <div class="row">
+              <button id="again" class="btn primary">Record another</button>
+              <button id="redownload" class="btn ghost">Download again</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="/src/lab.js"></script>
+  </body>
+</html>

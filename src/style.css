@@ -153,3 +153,5 @@ body > .cam { display: none; } /* parked until a screen claims it */
   .key { font-size: 22px; min-width: 50px; height: 50px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.tab-link { padding: 6px 16px; border-radius: 7px; color: var(--muted); font-weight: 700; text-decoration: none; }
+.tab-link:hover { color: var(--ink); }

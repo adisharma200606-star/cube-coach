@@ -1,0 +1,18 @@
+.lab-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(320px, 1fr); gap: 36px; align-items: start; }
+.lab-cam { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
+.lab-cam video { display: block; width: 100%; height: auto; transform: scaleX(-1); }
+.lab-cam.no-mirror video { transform: none; }
+.rec-dot { position: absolute; top: 12px; left: 12px; background: var(--red); color: #fff; font-weight: 700; font-size: 13px; padding: 3px 10px; border-radius: 6px; }
+.small-btn { padding: 6px 12px; text-decoration: none; font-size: 15px; }
+.howto { padding-left: 20px; }
+.howto li { margin: 6px 0; }
+.settings { display: grid; gap: 12px; margin: 18px 0; }
+.settings label { display: flex; gap: 10px; align-items: center; }
+.settings input[type=number], .settings select { font: inherit; padding: 6px 8px; border: 2px solid var(--line); border-radius: 8px; background: var(--panel); }
+.settings input[type=number] { width: 90px; }
+.now-move { font-family: var(--display); font-weight: 800; font-size: clamp(90px, 14vw, 160px); line-height: 1; margin: 6px 0; }
+.now-move.rot { color: var(--blue); }
+.countdown { font-family: var(--display); font-weight: 800; font-size: 120px; line-height: 1; color: var(--muted); }
+.upnext { display: flex; gap: 8px; flex-wrap: wrap; color: var(--muted); font-family: var(--display); font-weight: 700; font-size: 22px; }
+#twin twisty-player { width: 260px; height: 220px; }
+@media (max-width: 860px) { .lab-grid { grid-template-columns: 1fr; } }

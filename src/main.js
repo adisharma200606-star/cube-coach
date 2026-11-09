@@ -4,6 +4,7 @@ import { startCamera, sampleGrid, gridBox } from './camera.js';
 import { rgbToLab, deltaE2000, classifyStickers, groupDisplayColours } from './color.js';
 import { SCAN_STEPS, FACES, readCube, validate, solve, invert, groupsToFacelets, randomScramble } from './cube.js';
 import { planSolve, METHODS, COLOUR_NAMES } from './engine/methods.js';
+import { explainMove } from './notation.js';
 
 const $ = (id) => document.getElementById(id);
 const STD_RGB = { U: [245, 245, 245], R: [200, 30, 45], F: [0, 155, 72], D: [255, 213, 0], L: [255, 110, 20], B: [0, 70, 173] };
@@ -253,18 +254,6 @@ function renderStep(autoplay) {
   player.alg = step.moves;
   player.timestamp = 0;
   if (autoplay && step.moves) setTimeout(() => player.play(), 400);
-}
-
-const FACE_WORD = { U: 'top', D: 'bottom', R: 'right', L: 'left', F: 'front', B: 'back', M: 'middle slice (like L)', E: 'equator slice (like D)', S: 'standing slice (like F)' };
-function explainMove(m) {
-  const base = m[0], mod = m.slice(1);
-  const how = mod === '2' ? 'twice (half turn)' : mod === "'" ? 'anticlockwise' : 'clockwise';
-  if ('xyz'.includes(base)) {
-    const like = { x: 'R', y: 'U', z: 'F' }[base];
-    return `${m}: rotate the whole cube ${mod === '2' ? 'twice' : mod === "'" ? 'backwards' : ''} the way ${like} turns. No layer moves, you're just changing your grip.`.replace('  ', ' ');
-  }
-  if (base === base.toLowerCase()) return `${m}: turn the ${FACE_WORD[base.toUpperCase()]} two layers together ${how}.`;
-  return `${m}: turn the ${FACE_WORD[base]} ${base === 'M' || base === 'E' || base === 'S' ? '' : 'face '}${how}, as if you're looking straight at it.`;
 }
 
 function nextStep() {
