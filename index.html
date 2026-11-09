@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cube Coach</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Cube Coach</h1>
+      <p class="tag">Your webcam reads your cube. Then it teaches you.</p>
+    </header>
+
+    <main>
+      <!-- STEP 1: scanning -->
+      <section id="scan" class="step">
+        <div class="stage-wrap">
+          <div id="stage" class="mirror">
+            <video id="video" playsinline muted></video>
+            <canvas id="overlay"></canvas>
+          </div>
+          <div id="cam-error" class="hidden"></div>
+        </div>
+        <div class="panel">
+          <div class="step-count" id="step-count">Face 1 of 6</div>
+          <div class="hold">
+            <span class="chip" id="chip-front"></span>
+            <div>
+              <div id="instruction" class="instruction"></div>
+              <div class="hint">Fill the box with the face. Even light, no glare.</div>
+            </div>
+          </div>
+          <div class="buttons">
+            <button id="capture" class="primary">Capture <kbd>space</kbd></button>
+            <button id="flip-cam">Switch camera</button>
+          </div>
+          <div id="thumbs" class="thumbs"></div>
+          <p class="small">Tap a captured face to redo it.</p>
+        </div>
+      </section>
+
+      <!-- STEP 2: check the reading -->
+      <section id="review" class="step hidden">
+        <h2>Is this your cube?</h2>
+        <p id="review-msg" class="msg"></p>
+        <div id="net" class="net"></div>
+        <p class="small">Tap any sticker to change its colour. Outlined stickers are the ones I was least sure about.</p>
+        <div class="buttons">
+          <button id="build" class="primary">Looks right → build 3D cube</button>
+          <button id="rescan">Scan again</button>
+        </div>
+      </section>
+
+      <!-- STEP 3: digital twin -->
+      <section id="twin" class="step hidden">
+        <h2>Your cube, digitally</h2>
+        <p class="small">Drag to rotate it. This should match the cube in your hand (white top, green front).</p>
+        <div id="player-slot"></div>
+        <div class="buttons">
+          <button id="play-solution" class="primary">Show a computer solution</button>
+          <button id="restart">Scan another cube</button>
+        </div>
+        <p id="solution" class="mono small"></p>
+        <p class="small">Computer solutions are short but not how humans solve. Teaching F2L step by step is coming next.</p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
